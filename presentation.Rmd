@@ -194,7 +194,7 @@ S4: **ATAT**G
 
 Instead of $k$-mers (MUSCLE), we can encounter $k$-tuples (CLUSTALW) or anchors (DIALIGN). They mean mostly the same thing.
 
-k-mers are very common in bioinformatics and are utilized by the search methods (e.g., BLASR) and alignment-free phylogenetic methods.
+k-mers are very common in bioinformatics and are utilized by the search methods (e.g., BLAST) and alignment-free phylogenetic methods.
 
 ## Refinement
 
