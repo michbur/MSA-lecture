@@ -1,0 +1,218 @@
+---
+title: "MSA"
+author: Michal Burdukiewicz
+output: 
+  ioslides_presentation:
+    theme: "simplex"
+---
+
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+
+<style>
+slides > slide {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+
+</style>
+
+## Introduction
+
+
+Michał Burdukiewicz:
+
+ - bioinformatician (UMB, formerly WUT),
+ - 12 years with R,
+ - Why R? Foundation (whyr.pl).
+
+Lecture: https://github.com/michbur/MSA-lecture
+
+Mail: michalburdukiewicz@gmail.com
+
+# Important terms
+
+## Conserved region
+
+Conserved regions are regions of a high similarity between two or more biological sequences.
+
+## Alignment
+
+Alignment (przyrównanie/uliniowienie): arranging biological sequences protein to identify regions of conserved regions.
+
+## Pairwise alignment
+
+s1: ACTTCACC
+
+
+s2: ACTCACC
+
+
+How similar are these sequences?
+
+## Pairwise alignment
+
+```{r,message=FALSE,warning=FALSE}
+library(Biostrings)
+s1 <- DNAString("ACTTCACC")
+s2 <- DNAString("ACTCACC")
+alg <- pairwiseAlignment(s1,s2)
+seq <- c(alignedPattern(alg), alignedSubject(alg))
+seq
+```
+
+Score: match, missmatch, gap.
+
+The optimal alignment algorithm finds the maximum (or minimum) of the scoring function (the objective function).
+
+## Scoring function
+
+There are many scoring schemes.
+
+Scoring functions can:
+
+ - have different penalties (e.g., different penalties for gap opening and gap extension),
+ - utilize a substitution matrix (e.g., BLOSUM).
+
+# Why MSA?
+
+## Pairwise
+
+Pairwise alignment shows **conserved regions** between *two* sequences, which brings a very limited understanding of the underlying biological problem.
+
+## Multiple
+
+Multiple sequence alignment shows **conserved regions** between *many* sequences, which brings a vast understanding of the underlying biological problem allowing identification of e.g., functional domains in proteins.
+
+## Multiple
+
+Currently, it is possible to align whole genomes 
+
+# How MSA works
+
+## Pairwise alignment
+
+Dynamic programming.
+
+## Pairwise alignment
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Needleman-Wunsch_pairwise_sequence_alignment.png" width="450">
+
+Source: Wikipedia.
+
+## Multiple sequence alignment
+
+The simplest version: multi-dimensional dynamic programming:
+
+ - 2 sequences: two-dimensional array
+ - 3 sequences: three-dimensional array
+ - ...
+ 
+## Multiple sequence alignment
+
+The simplest version: multi-dimensional dynamic programming:
+
+Limitations: computational complexity.
+
+In this case, multiple means 'up to 11 sequences'.
+
+## Computational complexity of MSA
+
+The amount of time and resources required by MSA depends on two factors:
+
+ - the number of sequences.
+ - the length of sequences.
+ 
+There is always a trade-off between the quality of the alignment (exactness of the biological relationships) and the time necessary to compute the alignment.
+
+## Design strategies for MSA algorithms
+
+1. Stratification of similarity.
+2. Highly-similar subsequences.
+3. Refinement of the alignment.
+
+## Stratification of similarity
+
+Every MSA problem can be defined as the set of pairwise alignments. Therefore, it is easy to create MSA by integrating alignments of the most similar sequences.
+
+Progressive alignment algorithm: sequences are aligned sequentially based on the **guiding tree**.
+
+## Guiding tree
+
+<img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1186%2F1471-2105-5-113/MediaObjects/12859_2004_Article_229_Fig1_HTML.jpg" width="550">
+
+Source: [10.1186/1471-2105-5-113](https://doi.org/10.1186/1471-2105-5-113)
+
+Algorithm name: MUSCLE.
+
+## Stratification of similarity
+
+An incorrect guiding tree significantly degrades the quality of the final alignment.
+
+Thus, some methods employ different strategies, e.g., include sequences using graph built on the posterior pairwise alignment probability (e.g., PicXAA). 
+
+## Highly-similar subsequences
+
+$k$-mers (subsequences of length k) can be used to quickly compute the similarity of sequences.
+
+
+S1: A**TAT**G
+
+
+S2: A**TAT**C
+
+
+S3: AC**TAT**G
+
+
+S4: A**TAT**G
+
+## Highly-similar subsequences
+
+$k$-mers (subsequences of length k) can be used to quickly compute the similarity of sequences.
+
+
+S1: **ATAT**G
+
+
+S2: **ATAT**C
+
+
+S3: ACTATG
+
+
+S4: **ATAT**G
+
+## Highly-similar subsequences
+
+Instead of $k$-mers (MUSCLE), we can encounter $k$-tuples (CLUSTALW) or anchors (DIALIGN). They mean mostly the same thing.
+
+k-mers are very common in bioinformatics and are utilized by the search methods (e.g., BLASR) and alignment-free phylogenetic methods.
+
+## Refinement
+
+In the refinement stage, the preliminary MSA is further optimized to maximize or minimize the score function. As the MSA is not a convex problem, the refinement ensures that the alignment is at least in the local maximum/minimum of the score function.
+
+# Summary
+
+## Take-home message
+
+1. The problem of multiple sequence alignment can be simplified to many pairwise alignments.
+2. The MSA algorithms are heuristics which not always result in the most optimal alignment.
+3. Every MSA algorithm is a compromise between the quality of the alignment and the speed of computations.
+4. There are three main strategies to overcome the problem of MSA computatonal complexity: a) stratification of similar sequences, b) the usage of highly similar subsequences and c) refinement of the alignment.
+
+## Example MSA algorithms
+
+1. [CLUSTAL](https://doi.org/10.1016/0378-1119(88)90330-7).
+2. [MUSCLE](https://doi.org/10.1186/1471-2105-5-113)
+3. [MAFFT](https://academic.oup.com/nar/article/30/14/3059/2904316).
+
+General introduction to MSA: Biological Sequence Analysis (Anders Krogh, Richard M. Durbin, and Sean Eddy).
